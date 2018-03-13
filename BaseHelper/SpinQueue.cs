@@ -10,16 +10,14 @@ namespace BaseHelper
 {
     public class SpinQueue<T> : IDisposable
     {
-        public delegate void LogErrorEvent(string err);
-        public delegate void LogInfoEvent(string err);
-        public LogErrorEvent LogError { get; set; }
-        public LogInfoEvent LogInfo { get; set; }
         ConcurrentQueue<T> QueueA { get; } = new ConcurrentQueue<T>();
         ConcurrentQueue<T> QueueB { get; } = new ConcurrentQueue<T>();
-        bool bWritingQueueA { get; set; } = true;
+        bool bWritingQueueA { get { return bWritingQueueFlag; } set { bWritingQueueFlag = value; } }
+        volatile bool bWritingQueueFlag = true;
         ManualResetEventSlim WaitForMsgEvent { get; } = new ManualResetEventSlim();
         public bool IsQueueEmpty { get { return (QueueA.Count == 0) && (QueueB.Count == 0); } }
-        public bool IsRunning { get; private set; } = true;
+        public bool IsRunning { get { return bIsRunningFlag; } private set { bIsRunningFlag = value; } }
+        volatile bool bIsRunningFlag = true;
         CancellationTokenSource cts { get; } = new CancellationTokenSource();
         /// <summary>
         /// This function will wait all queue being empty before shutdown
