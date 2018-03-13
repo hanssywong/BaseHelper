@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BaseHelper
 {
-    public class objPool<T>
+    public sealed class objPool<T>
     {
         // pool of buffers
         private ConcurrentBag<T> m_FreeBuffers { get; set; }

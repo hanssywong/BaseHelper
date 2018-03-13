@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BaseHelper
 {
-    public class SpinQueue<T> : IDisposable
+    public sealed class SpinQueue<T> : IDisposable
     {
         ConcurrentQueue<T> QueueA { get; } = new ConcurrentQueue<T>();
         ConcurrentQueue<T> QueueB { get; } = new ConcurrentQueue<T>();
