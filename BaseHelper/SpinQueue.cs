@@ -12,10 +12,11 @@ namespace BaseHelper
     {
         ConcurrentQueue<T> QueueA { get; } = new ConcurrentQueue<T>();
         ConcurrentQueue<T> QueueB { get; } = new ConcurrentQueue<T>();
-        bool bWritingQueueA { get { return bWritingQueueFlag; } set { bWritingQueueFlag = value; } }
+        public bool bWritingQueueA { get { return bWritingQueueFlag; } private set { bWritingQueueFlag = value; } }
         volatile bool bWritingQueueFlag = true;
         ManualResetEventSlim WaitForMsgEvent { get; } = new ManualResetEventSlim();
         public bool IsQueueEmpty { get { return (QueueA.Count == 0) && (QueueB.Count == 0); } }
+        public int QueueCount { get { return QueueA.Count + QueueB.Count; } }
         public bool IsRunning { get { return bIsRunningFlag; } private set { bIsRunningFlag = value; } }
         volatile bool bIsRunningFlag = true;
         CancellationTokenSource cts { get; } = new CancellationTokenSource();
@@ -39,9 +40,8 @@ namespace BaseHelper
             IsRunning = false;
             cts.Cancel();
         }
-        public bool Enqueue(T obj)
+        public void Enqueue(T obj)
         {
-            if (!IsRunning) return false;
             if (bWritingQueueA)
             {
                 QueueA.Enqueue(obj);
@@ -53,7 +53,6 @@ namespace BaseHelper
 
             if (WaitForMsgEvent.SpinCount > 0)
                 WaitForMsgEvent.Set();
-            return true;
         }
 
         /// <summary>
@@ -81,7 +80,7 @@ namespace BaseHelper
                 ret = QueueB.TryDequeue(out logmsg);
             }
 
-            if (!ret)
+            if (!ret && ((!bWritingQueueA && QueueA.Count == 0) || (bWritingQueueA && QueueB.Count == 0)))
             {
                 if (bWritingQueueA)
                     bWritingQueueA = false;
