@@ -59,10 +59,10 @@ namespace BaseHelper
         /// the out T can be null and return will be false
         /// if the queue is empty, then this function will be blocked until new message arrive
         /// </summary>
-        /// <param name="logmsg"></param>
+        /// <param name="msg"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public bool TryDequeue(out T logmsg)
+        public bool TryDequeue(out T msg)
         {
             if (IsQueueEmpty)
             {
@@ -73,11 +73,11 @@ namespace BaseHelper
             bool ret = false;
             if (!bWritingQueueA)
             {
-                ret = QueueA.TryDequeue(out logmsg);
+                ret = QueueA.TryDequeue(out msg);
             }
             else
             {
-                ret = QueueB.TryDequeue(out logmsg);
+                ret = QueueB.TryDequeue(out msg);
             }
 
             if (!ret && ((!bWritingQueueA && QueueA.Count == 0) || (bWritingQueueA && QueueB.Count == 0)))
