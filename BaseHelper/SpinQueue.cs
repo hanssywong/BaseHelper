@@ -54,7 +54,10 @@ namespace BaseHelper
             if (WaitForMsgEvent.SpinCount > 0)
                 WaitForMsgEvent.Set();
         }
-
+        public void ReleaseBlocking()
+        {
+            WaitForMsgEvent.Set();
+        }
         /// <summary>
         /// the out T can be null and return will be false
         /// if the queue is empty, then this function will be blocked until new message arrive
